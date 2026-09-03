@@ -2668,10 +2668,10 @@ async function onLogin(e) {
     sessionStorage.setItem('cp_token', _token);
     sessionStorage.setItem('cp_user', JSON.stringify(_currentUser));
     sessionStorage.setItem(SESSION_KEY, '1');
-    await loadCerts();
+    try { await loadCerts(); } catch(certsErr) { console.error('loadCerts failed:', certsErr); }
     showApp();
   } catch(err) {
-    $("loginErr").classList.add("show");
+    console.error('Login error:', err);$4    $("loginErr").classList.add("show");
   } finally {
     if (btn) btn.disabled = false;
   }
@@ -3643,3 +3643,4 @@ document.addEventListener("DOMContentLoaded", boot);
 </script>
 </body>
 </html>
+

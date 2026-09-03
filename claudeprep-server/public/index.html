@@ -2411,9 +2411,8 @@ async function api(method, path, body) {
   return data;
 }
 
-// Legacy shim — CERT_BANKS is now fetched from the API but we keep a local
-// cache so the rest of the code (goCert, quiz) can still reference it
-let CERT_BANKS = {};
+// CERT_BANKS is the static question bank declared above (line ~1542).
+// loadCerts() updates its entries from the API on login/boot.
 let _certsLoaded = false;
 
 async function loadCerts() {
@@ -2619,7 +2618,10 @@ function isAuthed() {
 
 function boot() {
   if (isAuthed()) {
-    loadCerts().then(showApp).catch(() => { sessionStorage.clear(); showLogin(); });
+    // If certs fail to load, still show the app — don't clear the session
+    loadCerts()
+      .catch((err) => { console.error('loadCerts at boot failed:', err); })
+      .then(showApp);
   }
   else showLogin();
   $("loginForm").addEventListener("submit", onLogin);
